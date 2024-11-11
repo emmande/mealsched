@@ -24,7 +24,7 @@ def suggest_ulam(meal_type,n_days):
         filType = '(\'Merienda\')'
     else:
         filType = '(\"Lunch\", \"Dinner\")'
-    print(f"SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType}")
+    # print(f"SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType}")
     conn = sql.connect("meals.db", check_same_thread=False)
     cursor = conn.cursor()
 
