@@ -19,7 +19,7 @@ st.title("Scheduled Meals")
 
 def print_Scheduled(n_days):
 
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect("sharefromhost/meals.db", check_same_thread=False)
     # cursor = conn.cursor()
 
     query_lunch = f""" SELECT meal_date, dish as Lunch  from ulam_sched WHERE meal_date > datetime(\'now\', \'-{n_days} days\') 

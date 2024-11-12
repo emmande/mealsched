@@ -9,19 +9,12 @@ st.set_page_config(
 
 st.title("Add or Update a recipe")
 
-
-conn = sql.connect("meals.db", check_same_thread=False)
-cursor = conn.cursor()
-
-
-
-
 def list_ulam(meal_type):
 
     # lastweek = date.today() - timedelta(n_days)
 
 
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect("sharefromhost/meals.db", check_same_thread=False)
     cursor = conn.cursor()
 
    
@@ -41,7 +34,7 @@ def list_ulam(meal_type):
 
 def Query_Exist_recipe(dish):
 
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect("sharefromhost/meals.db", check_same_thread=False)
     queryExist=   f""" SELECT * FROM recipe_reg WHERE Dish = \'{dish}\' """
 
     df_exist = pd.read_sql_query(queryExist, conn)

@@ -25,7 +25,7 @@ def suggest_ulam(meal_type,n_days):
     else:
         filType = '(\"Lunch\", \"Dinner\")'
     # print(f"SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType}")
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect("sharefromhost/meals.db", check_same_thread=False)
     cursor = conn.cursor()
 
     cursor.execute(
@@ -76,7 +76,7 @@ def schedule_this_ulam(selected_suggested):
 
 
 def add_to_ulam(a,b,c):
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect("sharefromhost/meals.db", check_same_thread=False)
     cursor = conn.cursor()
 
     try:

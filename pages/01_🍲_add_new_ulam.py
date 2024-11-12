@@ -9,7 +9,7 @@ st.set_page_config(
 st.title("Add a new meal to masterlist")
 
 
-conn = sql.connect("meals.db", check_same_thread=False)
+conn = sql.connect("sharefromhost/meals.db", check_same_thread=False)
 cursor = conn.cursor()
 
 def formcreation():
