@@ -3,14 +3,13 @@ import sqlite3 as sql
 from datetime import timedelta, date
 
 
-
 st.set_page_config(
     page_title="Meal Planner",
     page_icon=":knife_fork_plate:"
 )
 
 
-st.title("Meal Recommendations")
+st.header(":blue[Meal Recommendations]")
 
 
 
@@ -86,8 +85,7 @@ def add_to_ulam(a,b,c):
         )
         cursor.execute("INSERT INTO ulam_sched VALUES (?,?,?)", (a,b,c))
         conn.commit()
-        # conn.close()
-        # st.success("New Ulam is added to DB!")
+
     except:
         st.warning("ERROR !")
     else:

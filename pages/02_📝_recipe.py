@@ -7,7 +7,7 @@ st.set_page_config(
     page_icon=":memo:"
 )
 
-st.title("Add or Update a recipe")
+st.header(":blue[Add or Update a recipe]",divider="gray")
 
 def list_ulam(meal_type):
 

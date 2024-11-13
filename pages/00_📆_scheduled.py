@@ -3,6 +3,8 @@ import sqlite3 as sql
 from datetime import timedelta, date
 import pandas as pd
 from functools import reduce
+import base64
+
 
 
 st.set_page_config(
@@ -12,7 +14,9 @@ st.set_page_config(
 
 
 
-st.title("Scheduled Meals")
+
+st.header(":blue[Scheduled Meals]",divider="gray")
+
 
 
 
@@ -35,6 +39,13 @@ def print_Scheduled(n_days):
       and  Meal_of_Day = \'Break Fast\' 
       """
     
+    # query_single = f""" SELECT meal_date, (case when Meal_of_Day = \'Break Fast\' then dish end) as BreakFast  
+    # , (case when Meal_of_Day = \'Lunch\' then dish end) as Lunch 
+    # , (case when Meal_of_Day = \'Merienda\' then dish end) as Merienda 
+    # , (case when Meal_of_Day = \'Dinner\' then dish end) as Dinner 
+    # from ulam_sched WHERE meal_date > datetime(\'now\', \'-{n_days} days\') 
+      
+    #   """
  
 
     df_bf = pd.read_sql_query(query_bf, conn)
@@ -67,5 +78,33 @@ def get_recent_days():
         return 7
 
 
-st.table(print_Scheduled(get_recent_days()))
+# st.table(print_Scheduled(get_recent_days()))
+st.dataframe(print_Scheduled(get_recent_days()))
+
+
+
+
+
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+def set_png_as_page_bg(png_file):
+    bin_str = get_base64_of_bin_file(png_file)
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("data:image/png;base64,%s");
+    background-size: cover;
+    }
+    </style>
+    ''' % bin_str
+    
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    return
+
+set_png_as_page_bg("images/scheduled.png")
+
+
 # formcreation()
