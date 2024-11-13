@@ -78,6 +78,9 @@ def formcreation(ulam_fill,dish,retrieved_exist):
 
 
 def addInfo(a,b,c,d,e,f):
+
+    conn = sql.connect("meals.db", check_same_thread=False)
+    cursor = conn.cursor()
     try:
         cursor.execute(
             """ CREATE TABLE IF NOT EXISTS recipe_reg (ID INTEGER PRIMARY KEY AUTOINCREMENT, Dish TEXT(50),Expert TEXT(10), Ingredients TEXT(300)
