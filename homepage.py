@@ -19,7 +19,7 @@ if os.name == 'nt':
 else:
     db = "/srv/dev-disk-by-uuid-4622448D224483C1/mum1TB/dbase/meals.db" #prod in raspberry pi (same NAS)
 
-def suggest_ulam(meal_type,n_days):
+def suggest_ulam(meal_type,n_days,meal_date):
 
     # lastweek = date.today() - timedelta(n_days)
 
@@ -34,9 +34,13 @@ def suggest_ulam(meal_type,n_days):
     cursor = conn.cursor()
 
     cursor.execute(
-        f""" SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType} and Dish not in (SELECT distinct Dish from ulam_sched WHERE meal_date > datetime(\'now\', \'-{n_days} days\'))
+        f""" SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType} and Dish not in (SELECT distinct Dish from ulam_sched WHERE meal_date > datetime(\'{meal_date}\', \'-{n_days} days\')
+        and meal_date < datetime(\'{meal_date}\'))
         order by Dish"""
     ) #datetime(\'now\', \'-8 days\')
+    # st.success( f""" SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType} and Dish not in (SELECT distinct Dish from ulam_sched WHERE meal_date > datetime(\'{meal_date}\', \'-{n_days} days\')
+    #     and meal_date < datetime(\'{meal_date}\'))
+    #     order by Dish""")
     rows = cursor.fetchall()
     conn.close()
 # Process the fetched rows
@@ -49,8 +53,9 @@ def suggest_ulam(meal_type,n_days):
 
 # Query Ulam suggestions and list them
 ulamtype = st.selectbox("Meal Type", ["Break Fast", "Lunch", "Dinner", "Merienda"])
+meal_date = st.date_input("Date: ")
 last_days=st.slider("Don't Suggest from past days: ", 7, 14)
-suggested = suggest_ulam(ulamtype,last_days)
+suggested = suggest_ulam(ulamtype,last_days,meal_date)
 selected_suggested = st.pills("Suggested", suggested, selection_mode="multi")
 # st.markdown(date.today() - timedelta(last_days))
 st.markdown(f"Your selected ulam: {selected_suggested}.")
@@ -61,13 +66,13 @@ if 'recent_days' not in st.session_state:
     st.session_state['recent_days'] = last_days
 
 
-def schedule_this_ulam(selected_suggested):
+def schedule_this_ulam(selected_suggested,meal_date):
 
 
     # st.write("Add Dish")
     with st.form(key="Schedule this ulam"):
         # Query Ulam suggestions and list them
-        meal_date = st.date_input("Date: ")
+        
 
         submit = st.form_submit_button("Schedule this Meal")
 
@@ -76,7 +81,7 @@ def schedule_this_ulam(selected_suggested):
             add_to_ulam(meal_date,suggest,ulamtype)
         
 
-        suggested = suggest_ulam(ulamtype,last_days)
+        suggested = suggest_ulam(ulamtype,last_days,meal_date)
 
 
 
@@ -102,7 +107,7 @@ def add_to_ulam(a,b,c):
         
 
 # run the form
-schedule_this_ulam(selected_suggested)
+schedule_this_ulam(selected_suggested,meal_date)
 
 
 
