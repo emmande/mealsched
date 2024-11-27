@@ -4,6 +4,7 @@ from datetime import timedelta, date
 import pandas as pd
 from functools import reduce
 import base64
+import os
 
 
 
@@ -18,12 +19,15 @@ st.set_page_config(
 st.header(":blue[Scheduled Meals]",divider="gray")
 
 
-
+if os.name == 'nt':
+    db = "Z:\\dbase\\meals.db" # dev in windows
+else:
+    db = "/srv/dev-disk-by-uuid-4622448D224483C1/mum1TB/dbase/meals.db" #prod in raspberry pi (same NAS)
 
 
 def print_Scheduled(n_days):
 
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect(db, check_same_thread=False)
     # cursor = conn.cursor()
 
     query_lunch = f""" SELECT meal_date, dish as Lunch  from ulam_sched WHERE meal_date > datetime(\'now\', \'-{n_days} days\') 

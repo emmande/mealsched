@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3 as sql
 import base64
+import os
 
 st.set_page_config(
     page_title="Add Meal",
@@ -9,14 +10,20 @@ st.set_page_config(
 
 st.header(":blue[Add a new meal to masterlist]")
 
+if os.name == 'nt':
+    db = "Z:\\dbase\\meals.db" # dev in windows
+else:
+    db = "/srv/dev-disk-by-uuid-4622448D224483C1/mum1TB/dbase/meals.db" #prod in raspberry pi (same NAS)
 
-conn = sql.connect("meals.db", check_same_thread=False)
+
+
+conn = sql.connect(db, check_same_thread=False)
 cursor = conn.cursor()
 
 def formcreation():
     st.subheader("Add Dish",divider="gray")
     with st.form(key="Ulam Management", ):
-        dish = st.text_input("Enter Ulam Name: ")
+        dish = (st.text_input("Enter Ulam Name: ")).title()
         ulamtype = st.selectbox("Meal Type", ["Break Fast", "Lunch", "Dinner", "Merienda"])
         submit = st.form_submit_button("Add Ulam")
 

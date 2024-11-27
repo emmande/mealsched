@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3 as sql
 from datetime import timedelta, date
+import os
 
 
 st.set_page_config(
@@ -13,6 +14,11 @@ st.header(":blue[Meal Recommendations]")
 
 
 
+if os.name == 'nt':
+    db = "Z:\\dbase\\meals.db" # dev in windows
+else:
+    db = "/srv/dev-disk-by-uuid-4622448D224483C1/mum1TB/dbase/meals.db" #prod in raspberry pi (same NAS)
+
 def suggest_ulam(meal_type,n_days):
 
     # lastweek = date.today() - timedelta(n_days)
@@ -24,12 +30,12 @@ def suggest_ulam(meal_type,n_days):
     else:
         filType = '(\"Lunch\", \"Dinner\")'
     # print(f"SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType}")
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect(db, check_same_thread=False)
     cursor = conn.cursor()
 
     cursor.execute(
         f""" SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType} and Dish not in (SELECT distinct Dish from ulam_sched WHERE meal_date > datetime(\'now\', \'-{n_days} days\'))
-        """
+        order by Dish"""
     ) #datetime(\'now\', \'-8 days\')
     rows = cursor.fetchall()
     conn.close()
@@ -75,7 +81,7 @@ def schedule_this_ulam(selected_suggested):
 
 
 def add_to_ulam(a,b,c):
-    conn = sql.connect("meals.db", check_same_thread=False)
+    conn = sql.connect(db, check_same_thread=False)
     cursor = conn.cursor()
 
     try:
