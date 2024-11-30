@@ -79,7 +79,7 @@ def get_recent_days():
     try:
         return st.session_state['recent_days']
     except:
-        return 7
+        return 14
 
 
 # st.table(print_Scheduled(get_recent_days()))

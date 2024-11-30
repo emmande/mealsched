@@ -20,25 +20,28 @@ else:
 conn = sql.connect(db, check_same_thread=False)
 cursor = conn.cursor()
 
+
 def formcreation():
     st.subheader("Add Dish",divider="gray")
     with st.form(key="Ulam Management", ):
         dish = (st.text_input("Enter Ulam Name: ")).title()
         ulamtype = st.selectbox("Meal Type", ["Break Fast", "Lunch", "Dinner", "Merienda"])
+        mainIngred = st.selectbox("Main Ingredients", ['Fish','Egg','Pork','Veggie','Dessert',\
+                                'Carbs','GroceryFood','Chicken','Beef','ShellFood','TakeAway','Mutton'])
         submit = st.form_submit_button("Add Ulam")
 
     if submit==True and len(dish) > 3:
         st.success("Your new ulam is registered!")
-        addInfo(dish,ulamtype)
+        addInfo(dish,ulamtype,mainIngred)
 
 
-def addInfo(a,b):
+def addInfo(a,b,c):
     try:
         cursor.execute(
-            """ CREATE TABLE IF NOT EXISTS ulam_reg (Dish TEXT(50), Meal_of_Day TEXT(50) )
+            """ CREATE TABLE IF NOT EXISTS ulam_reg (Dish TEXT(50), Meal_of_Day TEXT(50), Main_Ingredients TEXT(10) )
     """
         )
-        cursor.execute("INSERT INTO ulam_reg VALUES (?,?)", (a,b))
+        cursor.execute("INSERT INTO ulam_reg VALUES (?,?,?)", (a,b,c))
         conn.commit()
         # conn.close()
         # st.success("New Ulam is added to DB!")
