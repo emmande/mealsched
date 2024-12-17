@@ -12,9 +12,14 @@ st.set_page_config(
 st.header(":blue[Meal Recommendations]")
 
 if os.name == 'nt':
-    db = "Z:\\dbase\\meals.db" # dev in windows
+    if os.path.exists("Z:\\dbase"):
+        
+        db = "Z:\\dbase\\meals.db" # production db when accessed in windows
+    else:
+        db="meals.db"  # dev db
 else:
     db = "/srv/dev-disk-by-uuid-4622448D224483C1/mum1TB/dbase/meals.db" #prod in raspberry pi (same NAS)
+
 
 def suggest_ulam(meal_type,n_days,meal_date):
 
@@ -72,19 +77,6 @@ def randomize_selection(suggested, sugIngred,nth):
         else:
             sides.append(ul)
 
-    ## remove ... apply only when random is executed only on a single button
-
-    # if len(mains) > 0 and len(vegs)>0 and len(sides)>0:
-    #     randomlist = [random.choice(mains),random.choice(vegs),random.choice(sides)]
-    # elif len(mains) < 1 and len(vegs)>0 and len(sides)>0:
-    #     randomlist = [random.choice(vegs),random.choice(sides)]
-    # elif len(mains) > 0 and len(vegs)<1 and len(sides)>0:
-    #     randomlist = [random.choice(mains),random.choice(sides)]
-    # elif len(mains) > 0 and len(vegs)>0 and len(sides)<1:
-    #     randomlist = [random.choice(mains),random.choice(vegs)]
-    # elif len(mains) < 1 and len(vegs)<1 and len(sides)>0:
-    #     randomlist = [random.choice(sides)]
-  
 
     # return randomlist
     if len(mains) > nth:
@@ -121,13 +113,16 @@ if 'recent_days' not in st.session_state:
     st.session_state['recent_days'] = last_days
 
 # with st.form(key="Randomize"):
-number = int(st.number_input("Suggest next/previous",1,len(suggested)))
+number = int(st.number_input("Suggest next/previous",-1,len(suggested)))
 
 # with st.form(key="r"):
 #     if st.form_submit_button("Suggest another"):
 #         suggested, sugIngred = suggest_ulam(ulamtype,last_days,meal_date)
 
-randomlist=randomize_selection(suggested, sugIngred,number)
+if number > -1:
+    randomlist=randomize_selection(suggested, sugIngred,number)
+else:
+    randomlist=suggested
 
 selected_suggested = st.pills("Suggested", randomlist, selection_mode="multi")
 # st.markdown(randomlist)

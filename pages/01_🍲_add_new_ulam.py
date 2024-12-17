@@ -11,7 +11,11 @@ st.set_page_config(
 st.header(":blue[Add a new meal to masterlist]")
 
 if os.name == 'nt':
-    db = "Z:\\dbase\\meals.db" # dev in windows
+    if os.path.exists("Z:\\dbase"):
+        
+        db = "Z:\\dbase\\meals.db" # production db when accessed in windows
+    else:
+        db="meals.db"  # dev db
 else:
     db = "/srv/dev-disk-by-uuid-4622448D224483C1/mum1TB/dbase/meals.db" #prod in raspberry pi (same NAS)
 
@@ -28,20 +32,24 @@ def formcreation():
         ulamtype = st.selectbox("Meal Type", ["Break Fast", "Lunch", "Dinner", "Merienda"])
         mainIngred = st.selectbox("Main Ingredients", ['Fish','Egg','Pork','Veggie','Dessert',\
                                 'Carbs','GroceryFood','Chicken','Beef','ShellFood','TakeAway','Mutton'])
+        #add health data
+        oil = int(st.number_input("Oil Level (3=Deep Fried)",0,3))
+        health_rating = int(st.number_input("Health Rating (5=Healthiest)",1,5))
         submit = st.form_submit_button("Add Ulam")
 
     if submit==True and len(dish) > 3:
         st.success("Your new ulam is registered!")
-        addInfo(dish,ulamtype,mainIngred)
+        addInfo(dish,ulamtype,mainIngred, oil, health_rating)
 
 
-def addInfo(a,b,c):
+def addInfo(a,b,c,d,e):
     try:
         cursor.execute(
-            """ CREATE TABLE IF NOT EXISTS ulam_reg (Dish TEXT(50), Meal_of_Day TEXT(50), Main_Ingredients TEXT(10) )
+            """ CREATE TABLE IF NOT EXISTS ulam_reg (Dish TEXT(50), Meal_of_Day TEXT(50), Main_Ingredients TEXT(10),"Oil_Level"	INTEGER,
+	"Health_Rating"	INTEGER )
     """
         )
-        cursor.execute("INSERT INTO ulam_reg VALUES (?,?,?)", (a,b,c))
+        cursor.execute("INSERT INTO ulam_reg VALUES (?,?,?,?,?)", (a,b,c,d,e))
         conn.commit()
         # conn.close()
         # st.success("New Ulam is added to DB!")
