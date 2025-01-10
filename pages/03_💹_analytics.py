@@ -58,14 +58,14 @@ def meal_frequency(ulamtype,from_date,to_date):
     conn = sql.connect(db, check_same_thread=False)
 
     query_result= f""" SELECT dish,  count(*) as freq  from ulam_sched WHERE 
-    meal_date > \'{from_date}\' and meal_date < \'{to_date}\'
+    meal_date > \'{from_date}\' and meal_date <= \'{to_date}\'
     and Meal_of_Day = \'{ulamtype}\' group by dish
     order by count(*) desc"""
 
     query_ingred= f""" SELECT Main_Ingredients,  count(a.Dish) as freq  from ulam_sched as a  
     inner join ulam_reg as b on a.Dish=b.Dish
     where
-    meal_date > \'{from_date}\' and meal_date < \'{to_date}\'
+    meal_date > \'{from_date}\' and meal_date <= \'{to_date}\'
     and a.Meal_of_Day = \'{ulamtype}\' group by Main_Ingredients
     order by count(a.Dish) desc"""
 
@@ -74,7 +74,7 @@ def meal_frequency(ulamtype,from_date,to_date):
     meal_date > \'{from_date2}\' 
     and Meal_of_Day = \'{ulamtype}\' 
     group by dish, strftime("%m-%Y", meal_date)
-    order by strftime("%m-%Y", meal_date)
+    order by strftime("%Y-%m", meal_date)
     """
 
     query_monthly_ing= f""" SELECT Main_Ingredients, strftime("%m-%Y", meal_date) as month,  count(a.Dish) as freq  from ulam_sched as a  
@@ -83,7 +83,7 @@ def meal_frequency(ulamtype,from_date,to_date):
     meal_date > \'{from_date2}\' 
     and a.Meal_of_Day = \'{ulamtype}\' 
     group by Main_Ingredients, strftime("%m-%Y", meal_date)
-    order by strftime("%m-%Y", meal_date)
+    order by strftime("%Y-%m", meal_date)
     """
 
     query_weekly_oil= f""" SELECT a.Meal_of_Day, strftime("%W", meal_date) as weeks,  sum(b.Oil_Level) as oil_consumption  from ulam_sched as a  

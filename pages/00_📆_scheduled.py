@@ -57,19 +57,19 @@ def print_Scheduled(from_date,to_date):
     conn = sql.connect(db, check_same_thread=False)
 
     query_lunch = f""" SELECT meal_date, dish as Lunch  from ulam_sched WHERE 
-    meal_date > \'{from_date}\' and meal_date < \'{to_date}\' and
+    meal_date > \'{from_date}\' and meal_date <= \'{to_date}\' and
     Meal_of_Day = \'Lunch\' order by meal_date desc"""
     
     query_merienda = f""" SELECT meal_date,dish as Merienda  from ulam_sched WHERE  
-    meal_date > \'{from_date}\' and meal_date < \'{to_date}\' and
+    meal_date > \'{from_date}\' and meal_date <= \'{to_date}\' and
     Meal_of_Day = \'Merienda\'  order by meal_date desc"""
     
     query_dinner = f""" SELECT meal_date, dish as Dinner  from ulam_sched WHERE 
-     meal_date > \'{from_date}\' and meal_date < \'{to_date}\' and
+     meal_date > \'{from_date}\' and meal_date <= \'{to_date}\' and
      Meal_of_Day = \'Dinner\'  order by meal_date desc"""
   
     query_bf = f""" SELECT meal_date, dish as BreakFast  from ulam_sched WHERE  
-     meal_date > \'{from_date}\' and meal_date < \'{to_date}\' and
+     meal_date > \'{from_date}\' and meal_date <= \'{to_date}\' and
      Meal_of_Day = \'Break Fast\'  order by meal_date desc """
     # query_single = f""" SELECT meal_date, (case when Meal_of_Day = \'Break Fast\' then dish end) as BreakFast  
     # , (case when Meal_of_Day = \'Lunch\' then dish end) as Lunch 
@@ -108,8 +108,9 @@ def get_recent_days():
         return 14
 
 
-# st.table(print_Scheduled(get_recent_days()))
-st.dataframe(print_Scheduled(from_date,to_date),hide_index=True)
+# st.table(print_Scheduled(from_date,to_date))
+st.dataframe(print_Scheduled(from_date,to_date),hide_index=True, use_container_width =True)
+# st.data_editor(print_Scheduled(from_date,to_date),hide_index=True, use_container_width =True)
 
 
 
