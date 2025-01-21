@@ -26,17 +26,18 @@ def suggest_ulam(meal_type,n_days,meal_date):
     # lastweek = date.today() - timedelta(n_days)
 
     if meal_type == 'Break Fast':
-        filType = '(\'Break Fast\', \'Merienda\')'
+        filType = '(\'Break Fast\', \'Merienda\', \'Brunch\')'
     elif meal_type == 'Merienda':
         filType = '(\'Merienda\')'
     else:
-        filType = '(\"Lunch\", \"Dinner\")'
+        filType = '(\"Lunch\", \"Dinner\", \'Brunch\')'
+
     # print(f"SELECT Dish FROM ulam_reg WHERE Meal_of_Day in {filType}")
     conn = sql.connect(db, check_same_thread=False)
     cursor = conn.cursor()
     querystring=f""" SELECT Dish, Main_Ingredients FROM ulam_reg WHERE Meal_of_Day in {filType} and Dish not in (SELECT distinct Dish from ulam_sched WHERE meal_date > datetime(\'{meal_date}\', \'-{n_days} days\')
         and meal_date < datetime(\'{meal_date}\'))
-
+        order  by Main_Ingredients
         """
     # order by RANDOM()
     cursor.execute(querystring) 
@@ -58,7 +59,7 @@ def suggest_ulam(meal_type,n_days,meal_date):
 # Query Ulam suggestions and list them
 ulamtype = st.selectbox("Meal Type", ["Break Fast", "Lunch", "Dinner", "Merienda"])
 meal_date = st.date_input("Date: ")
-last_days=st.slider("Don't Suggest from past days: ", 7, 14)
+last_days=st.slider("Don't Suggest from past days: ", 0, 14, value=7,step=7)
 suggested, sugIngred = suggest_ulam(ulamtype,last_days,meal_date)
 
 #add random selection here to be displayed in pills
