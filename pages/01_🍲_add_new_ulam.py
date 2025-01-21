@@ -31,7 +31,7 @@ def formcreation():
         dish = (st.text_input("Enter Ulam Name: ")).title()
         ulamtype = st.selectbox("Meal Type", ["Break Fast", "Lunch", "Dinner","Brunch", "Merienda"])
         mainIngred = st.selectbox("Main Ingredients", ['Fish','Egg','Pork','Veggie','Dessert',\
-                                'Carbs','GroceryFood','Chicken','Beef','ShellFood',"Seafoof",'TakeAway','Mutton'])
+                                'Carbs','GroceryFood','Chicken','Beef','ShellFood',"Seafood",'TakeAway','Mutton'])
         #add health data
         oil = int(st.number_input("Oil Level (3=Deep Fried)",0,3))
         health_rating = int(st.number_input("Health Rating (5=Healthiest)",1,5))
