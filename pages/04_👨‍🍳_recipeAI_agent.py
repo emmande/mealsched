@@ -3,7 +3,7 @@ import sqlite3 as sql
 import base64
 import os
 import pandas as pd
-# import json
+import json
 
 from langchain_community.document_loaders import SeleniumURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -153,7 +153,7 @@ index_docs(chunked_documents)
 # question = st.chat_input()
 question = """
 The document contains a recipe. You are to retrieve the name of the dish, ingredients, 
-method of cooking, breakdown into preparation and cooking. If there is an oven setting, retrieve it.
+method of cooking, breakdown into preparation and cooking. If there is an oven setting, retrieve it and convert to celsius if in fahrenheit.
 
 Also you need to infer the following
 1. Oil_raiting: You need to rate how much oily is this recipe. Criteria:  Rating is 0 when no oil involved and 3 means it was deep-fried.
@@ -182,12 +182,18 @@ Example:
 
 """
 
+# def  extract_dic(answer):
+#     pass
+
 if submit:
     st.chat_message("user").write(question)
     retrieve_documents = retrieve_docs(question)
     context = "\n\n".join([doc.page_content for doc in retrieve_documents])
     answer = answer_question(question, context)
     st.chat_message("assistant").write(answer)
+    # st.success(answer)
+    # st.success(type(answer))
+    # st.success(answer["dish_name"])
 
     st.subheader("Do you want to add this to DB?",divider="gray")
     with st.form(key="Add to DB", ):
@@ -195,7 +201,7 @@ if submit:
 
 
     # note need to take the dictionary from answer
-    dic = extract_dic(answer)
+    dic = json.loads(answer)
     if addtoDB:
         add_dish(dic)
         add_recipe(dic)
