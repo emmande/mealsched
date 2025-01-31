@@ -4,6 +4,8 @@ import base64
 import os
 import pandas as pd
 import json
+import psutil
+import re
 
 from langchain_community.document_loaders import SeleniumURLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -20,7 +22,7 @@ st.set_page_config(
 
 
 
-if os.name == 'nt':
+if os.name == "nt":
     if os.path.exists("Z:\\dbase"):
         
         db = "Z:\\dbase\\meals.db" # production db when accessed in windows
@@ -34,11 +36,11 @@ def add_dish(dic):
     cursor = conn.cursor()
 
 
-    a = dic['dish_name']
-    b = dic['dishtype']
-    c = dic['main_ingredient']
-    d = dic['oil_rating']
-    e = dic['health_rating']
+    a = dic["dish_name"]
+    b = dic["dishtype"]
+    c = dic["main_ingredient"]
+    d = dic["oil_rating"]
+    e = dic["health_rating"]
 
 
     try:
@@ -61,12 +63,12 @@ def add_dish(dic):
 
 def add_recipe(dic):
 
-    a = dic['dish_name']
-    b = 'AI agent'
-    c = dic['ingredients'].replace(", ","\n")
-    d = dic['prep_method']
-    e = dic['cooking_steps']
-    f = dic['oven_setting'] +'\n' + dic['extra_note']
+    a = dic["dish_name"]
+    b = "AI agent"
+    c = dic["ingredients"].replace(", ","\n")
+    d = dic["prep_method"]
+    e = dic["cooking_steps"]
+    f = dic["oven_setting"] +"\n" + dic["extra_note"]
 
 
     conn = sql.connect(db, check_same_thread=False)
@@ -78,7 +80,7 @@ def add_recipe(dic):
     """
         )
         queryInsert=f"INSERT OR REPLACE INTO recipe_reg (ID, Dish,Expert,Ingredients,Prep,Cook,Settings) \
-            VALUES((SELECT ID From recipe_reg WHERE Dish = \'{a}\'),?,?,?,?,?,?)        "
+            VALUES((SELECT ID From recipe_reg WHERE Dish = \"{a}\"),?,?,?,?,?,?)        "
         # st.write(queryInsert)
         cursor.execute(queryInsert, (a,b,c,d,e,f))
         conn.commit()
@@ -95,7 +97,7 @@ def add_recipe(dic):
 #RAG Portion
 
 template = """
-You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don"t know the answer, just say that you don"t know. Use three sentences maximum and keep the answer concise.
 Question: {question} 
 Context: {context} 
 Answer:
@@ -165,35 +167,43 @@ Also you need to infer the following
 Output the information in a python dictionary format. 
 
 Example:
-{'dish_name': 'brioche', 
- 'ingredients': "1 egg, 500 ml water, 2 cups flour",
- 'prep_method': "prepare and mix all ingredients",
- 'cooking_steps': "put into oven for 30 minutes",
- 'oven_setting': "200 Celsius',
- 'oil_rating': 1,
- 'health_rating': 4,
- 'dishtype': 'Breakfast',
- 'main_ingredient': 'Flour',
- 'extra_note':'Best to knead using mixer'
+'''
+{
+ "dish_name": "brioche", 
+ "ingredients": "1 egg, 500 ml water, 2 cups flour",
+ "prep_method": "prepare and mix all ingredients",
+ "cooking_steps": "put into oven for 30 minutes",
+ "oven_setting": "200 Celsius",
+ "oil_rating": 1,
+ "health_rating": 4,
+ "dishtype": "Breakfast",
+ "main_ingredient": "Flour",
+ "extra_note":"Best to knead using mixer"
+  }
+'''
  
- }
+ """
+
+
+def  extract_RAM():
+    return psutil.virtual_memory()[0]/1000000000
 
 
 
-"""
-
-# def  extract_dic(answer):
-#     pass
-
-if submit:
+if submit and extract_RAM() > 15 :
     st.chat_message("user").write(question)
     retrieve_documents = retrieve_docs(question)
     context = "\n\n".join([doc.page_content for doc in retrieve_documents])
     answer = answer_question(question, context)
     st.chat_message("assistant").write(answer)
-    # st.success(answer)
-    # st.success(type(answer))
-    # st.success(answer["dish_name"])
+
+    n= answer.find("{")
+    e= answer.find("}")
+    ans=answer[n:e+1]
+    # st.success(ans)
+    # st.success(type(ans))
+    dic = json.loads(ans)
+    st.success(dic["dish_name"])
 
     st.subheader("Do you want to add this to DB?",divider="gray")
     with st.form(key="Add to DB", ):
@@ -201,8 +211,11 @@ if submit:
 
 
     # note need to take the dictionary from answer
-    dic = json.loads(answer)
+    
     if addtoDB:
         add_dish(dic)
         add_recipe(dic)
+
+elif submit and extract_RAM() < 15:
+    st.warning("RUN ONLY IF HOSTED IN atleast 16GB RAM COMPUTER!")
 
