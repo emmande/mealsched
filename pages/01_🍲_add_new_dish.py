@@ -55,14 +55,15 @@ def addInfo(a,b,c,d,e):
     cursor = conn.cursor()
     try:
         cursor.execute(
-            """ CREATE TABLE IF NOT EXISTS ulam_reg (Dish TEXT(50), Meal_of_Day TEXT(50), Main_Ingredients TEXT(10),"Oil_Level"	INTEGER,
+            """ CREATE TABLE IF NOT EXISTS ulam_reg (ID INTEGER PRIMARY KEY AUTOINCREMENT, Dish TEXT(50), Meal_of_Day TEXT(50), Main_Ingredients TEXT(10),"Oil_Level"	INTEGER,
 	"Health_Rating"	INTEGER )
     """
         )
-        cursor.execute("INSERT INTO ulam_reg VALUES (?,?,?,?,?)", (a,b,c,d,e))
+        queryInsert=f"INSERT OR REPLACE INTO ulam_reg (ID, Dish,Meal_of_Day,Main_Ingredients,Oil_Level,Health_Rating) \
+                       VALUES((SELECT ID From ulam_reg WHERE Dish = \"{a}\"),?,?,?,?,?)        "#VALUES (?,?,?,?,?)", (a,b,c,d,e))
+
+        cursor.execute(queryInsert, (a,b,c,d,e))
         conn.commit()
-        # conn.close()
-        # st.success("New dish is added to DB!")
     except:
         st.warning("DUPLICATE, dish ALREADY EXISTS!")
     else:
