@@ -6,9 +6,6 @@ import pandas as pd
 
 
 
-
-
-
 st.set_page_config(
     page_title="Recipe AI agent",
     page_icon=":male-cook:"
@@ -17,18 +14,6 @@ st.set_page_config(
 
 
 if os.name == "nt":
-
-    
-    import json
-    import re
-    import psutil
-    from langchain_community.document_loaders import SeleniumURLLoader
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
-    from langchain_core.vectorstores import InMemoryVectorStore
-    from langchain_ollama import OllamaEmbeddings
-    from langchain_core.prompts import ChatPromptTemplate
-    from langchain_ollama.llms import OllamaLLM
-
 
     if os.path.exists("Z:\\dbase"):
         
@@ -277,6 +262,16 @@ with st.form(key="AI Recipe Agent", ):
 
 
     if submit and extract_RAM() > 15 and len(url)>10:
+
+        import json
+        import re
+        import psutil
+        from langchain_community.document_loaders import SeleniumURLLoader
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        from langchain_core.vectorstores import InMemoryVectorStore
+        from langchain_ollama import OllamaEmbeddings
+        from langchain_core.prompts import ChatPromptTemplate
+        from langchain_ollama.llms import OllamaLLM
 
         documents = load_page(url)
         chunked_documents = split_text(documents)
