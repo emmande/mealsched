@@ -3,16 +3,10 @@ import sqlite3 as sql
 import base64
 import os
 import pandas as pd
-import json
-import psutil
-import re
 
-from langchain_community.document_loaders import SeleniumURLLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_ollama import OllamaEmbeddings
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
+
+
+
 
 
 st.set_page_config(
@@ -23,6 +17,19 @@ st.set_page_config(
 
 
 if os.name == "nt":
+
+    
+    import json
+    import re
+    import psutil
+    from langchain_community.document_loaders import SeleniumURLLoader
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    from langchain_core.vectorstores import InMemoryVectorStore
+    from langchain_ollama import OllamaEmbeddings
+    from langchain_core.prompts import ChatPromptTemplate
+    from langchain_ollama.llms import OllamaLLM
+
+
     if os.path.exists("Z:\\dbase"):
         
         db = "Z:\\dbase\\meals.db" # production db when accessed in windows
